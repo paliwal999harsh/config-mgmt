@@ -4,18 +4,7 @@ import (
 	"context"
 	"fmt"
 	"mime/multipart"
-
-	"github.com/paliwal999harsh/config-mgmt/internal/common/logging"
 )
-
-var logger logging.Logger
-
-func init() {
-	logger = logging.New(
-		logging.WithLevel("debug"),
-		logging.WithPrettyPrint(true),
-	)
-}
 
 type StorageService interface {
 	UploadFile(ctx context.Context, file multipart.File, fileName string) (string, error)

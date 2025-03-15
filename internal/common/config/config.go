@@ -9,16 +9,10 @@ type ServiceConfig struct {
 	Name string
 }
 
-var logger logging.Logger
-
 func init() {
-	logger = logging.New(
-		logging.WithLevel("debug"),
-		logging.WithPrettyPrint(true),
-	)
 	viper.SetConfigFile("C:/Users/paliw/GolandProjects/config-mgmt/.env")
 	viper.AutomaticEnv()
 	if err := viper.ReadInConfig(); err != nil {
-		logger.Info("No config file found, using environment variables")
+		logging.Info("No config file found, using environment variables")
 	}
 }

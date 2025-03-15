@@ -9,20 +9,10 @@ import (
 	"github.com/paliwal999harsh/config-mgmt/internal/file/transport"
 )
 
-var logger logging.Logger
-
-func init() {
-	logger = logging.New(
-		logging.WithLevel("debug"),
-		logging.WithPrettyPrint(true),
-	)
-}
-
 func main() {
-	config.LoadCoreServiceConfig()
-	config.LoadMinIOStorageConfig()
-	logger.Info("Server starting",
-		logging.Str("service", "core"),
+	coreServiceCfg := config.LoadCoreServiceConfig()
+	logging.Info("Server starting",
+		logging.Str("service", coreServiceCfg.Name),
 		logging.Int("port", 8080))
 	e := echo.New()
 	e.HideBanner = true
@@ -31,7 +21,7 @@ func main() {
 		LogURI:    true,
 		LogStatus: true,
 		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
-			logger.Info("request",
+			logging.Info("request",
 				logging.Str("URI", v.URI),
 				logging.Int("status", v.Status))
 
@@ -41,7 +31,7 @@ func main() {
 
 	fileService, err := service.NewFileUploadService("MinIO")
 	if err != nil {
-		logger.Debug(err.Error())
+		logging.Debug(err.Error())
 		fileService = &service.FileUploadService{}
 	}
 

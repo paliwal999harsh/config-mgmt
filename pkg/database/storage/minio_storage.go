@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"mime/multipart"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/paliwal999harsh/config-mgmt/internal/common/config"
+	"github.com/paliwal999harsh/config-mgmt/internal/common/logging"
 )
 
 type MinIOStorage struct {
@@ -31,11 +31,11 @@ func (s *MinIOStorage) UploadFile(ctx context.Context, file multipart.File, file
 }
 
 func NewMinIOStorage(bucket string, useSSL bool) (*MinIOStorage, error) {
-	config.LoadMinIOStorageConfig()
+	minioCfg := config.LoadMinIOStorageConfig()
 
-	client, err := minio.New(config.MinIOStorageConfig.URL,
+	client, err := minio.New(minioCfg.URL,
 		&minio.Options{
-			Creds:  credentials.NewStaticV4(config.MinIOStorageConfig.AccessKey, config.MinIOStorageConfig.SecretKey, ""),
+			Creds:  credentials.NewStaticV4(minioCfg.AccessKey, minioCfg.SecretKey, ""),
 			Secure: useSSL,
 		})
 
@@ -46,11 +46,11 @@ func NewMinIOStorage(bucket string, useSSL bool) (*MinIOStorage, error) {
 	ctx := context.Background()
 	exists, err := client.BucketExists(ctx, bucket)
 	if err != nil {
-		logger.Info(fmt.Sprintf("%v", err.Error()))
+		logging.Info(fmt.Sprintf("%v", err.Error()))
 		return nil, err
 	}
 	if !exists {
-		log.Printf("Creating bucket: %s\n", bucket)
+		logging.Info(fmt.Sprintf("Creating bucket: %s\n", bucket))
 		err = client.MakeBucket(ctx, bucket, minio.MakeBucketOptions{})
 		if err != nil {
 			return nil, fmt.Errorf("failed to create bucket: %v", err)

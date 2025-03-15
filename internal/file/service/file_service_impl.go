@@ -9,17 +9,8 @@ import (
 	"github.com/paliwal999harsh/config-mgmt/pkg/database/storage"
 )
 
-var logger logging.Logger
-
-func init() {
-	logger = logging.New(
-		logging.WithLevel("debug"),
-		logging.WithPrettyPrint(true),
-	)
-}
-
 func (f *FileUploadService) UploadFile(context context.Context, src multipart.File, filename string) (any, error) {
-	logger.Info("File Upload Service", logging.Str("filename", filename))
+	logging.Info("File Upload Service", logging.Str("filename", filename))
 	file_url, err := (*f.storage).UploadFile(context, src, filename)
 	if err != nil {
 		return nil, fmt.Errorf("unable to upload file")

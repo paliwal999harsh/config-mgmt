@@ -1,9 +1,7 @@
 package config
 
-var CoreServiceConfig ServiceConfig
-
-func LoadCoreServiceConfig() {
-	CoreServiceConfig = ServiceConfig{
+func LoadCoreServiceConfig() ServiceConfig {
+	return ServiceConfig{
 		Name: "CORE-SERVICE",
 	}
 }

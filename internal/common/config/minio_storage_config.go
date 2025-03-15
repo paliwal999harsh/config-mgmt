@@ -10,10 +10,8 @@ type MinIoStorageConfig struct {
 	SecretKey string
 }
 
-var MinIOStorageConfig MinIoStorageConfig
-
-func LoadMinIOStorageConfig() {
-	MinIOStorageConfig = MinIoStorageConfig{
+func LoadMinIOStorageConfig() MinIoStorageConfig {
+	return MinIoStorageConfig{
 		URL:       viper.GetString("MinIOURL"),
 		AccessKey: viper.GetString("MinIOAccessKey"),
 		SecretKey: viper.GetString("MinIOSecretKey"),

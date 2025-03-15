@@ -26,7 +26,7 @@ type Field struct {
 	Value any
 }
 
-// config holds logger configuration
+// config holds Logger configuration
 type config struct {
 	level      zerolog.Level
 	output     io.Writer
@@ -34,7 +34,7 @@ type config struct {
 	pretty     bool
 }
 
-// Option is a function that modifies the logger config
+// Option is a function that modifies the Logger config
 type Option func(*config)
 
 // WithLevel sets the minimum logging level
@@ -80,10 +80,10 @@ func WithPrettyPrint(enabled bool) Option {
 
 // zeroLogger implements the Logger interface using zerolog
 type zeroLogger struct {
-	logger zerolog.Logger
+	zerolog.Logger
 }
 
-// New creates a new zerolog-based logger with the provided options
+// New creates a new zerolog-based Logger with the provided options
 func New(opts ...Option) Logger {
 	// Default configuration
 	cfg := &config{
@@ -111,46 +111,46 @@ func New(opts ...Option) Logger {
 	}
 
 	zl := zerolog.New(output).With().Timestamp().Logger()
-	return &zeroLogger{logger: zl}
+	return &zeroLogger{Logger: zl}
 }
 
 // Debug logs a debug message
 func (l *zeroLogger) Debug(msg string, fields ...Field) {
-	l.log(l.logger.Debug(), msg, fields...)
+	l.log(l.Logger.Debug(), msg, fields...)
 }
 
 // Info logs an info message
 func (l *zeroLogger) Info(msg string, fields ...Field) {
-	l.log(l.logger.Info(), msg, fields...)
+	l.log(l.Logger.Info(), msg, fields...)
 }
 
 // Warn logs a warning message
 func (l *zeroLogger) Warn(msg string, fields ...Field) {
-	l.log(l.logger.Warn(), msg, fields...)
+	l.log(l.Logger.Warn(), msg, fields...)
 }
 
 // Error logs an error message
 func (l *zeroLogger) Error(msg string, fields ...Field) {
-	l.log(l.logger.Error(), msg, fields...)
+	l.log(l.Logger.Error(), msg, fields...)
 }
 
 // Fatal logs a fatal message and exits
 func (l *zeroLogger) Fatal(msg string, fields ...Field) {
-	l.log(l.logger.Fatal(), msg, fields...)
+	l.log(l.Logger.Fatal(), msg, fields...)
 }
 
-// With returns a new logger with the given fields added
+// With returns a new Logger with the given fields added
 func (l *zeroLogger) With(fields ...Field) Logger {
-	logger := l.logger
+	Logger := l.Logger
 	for _, field := range fields {
-		logger = logger.With().Interface(field.Key, field.Value).Logger()
+		Logger = Logger.With().Interface(field.Key, field.Value).Logger()
 	}
-	return &zeroLogger{logger: logger}
+	return &zeroLogger{Logger: Logger}
 }
 
-// WithContext returns a new logger with context values
+// WithContext returns a new Logger with context values
 func (l *zeroLogger) WithContext(ctx context.Context) Logger {
-	return &zeroLogger{logger: l.logger.With().Ctx(ctx).Logger()}
+	return &zeroLogger{Logger: l.Logger.With().Ctx(ctx).Logger()}
 }
 
 // log applies fields to the event and sends the message
@@ -159,4 +159,13 @@ func (l *zeroLogger) log(event *zerolog.Event, msg string, fields ...Field) {
 		event = event.Interface(field.Key, field.Value)
 	}
 	event.Msg(msg)
+}
+
+var log Logger
+
+func init() {
+	log = New(
+		WithLevel("debug"),
+		WithPrettyPrint(true),
+	)
 }
